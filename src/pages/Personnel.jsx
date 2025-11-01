@@ -28,7 +28,13 @@ export default function Personnel() {
   return (
     <DashboardLayout>
         <SFA onUserCreated={fetchUsers}/>
-        <UserTable users={users} loading={loading} onRefresh={fetchUsers} onUserUpdated={fetchUsers}/>
+        <UserTable
+            users={users}
+            loading={loading}
+            onRefresh={fetchUsers}
+            onUserUpdated={fetchUsers}
+            onUserStatusToggle={fetchUsers}
+            onUserDeleted={fetchUsers}/>
     </DashboardLayout>
   )
 }

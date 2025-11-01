@@ -52,15 +52,23 @@ export const userService = {
         return response.data;
     },
 
-    async toggleStatus(id) {
+    async toggleStatus(id,adminToken) {
         const api = client();
-        const response = await api.patch(`/toggle-user-status/${id}`);
+        const response = await api.put(`/toggle-user-status/${id}`,null,{
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+            }
+        });
         return response.data;
     },
 
-    async delete(id) {
+    async userDelete(id,adminToken) {
         const api = client();
-        const response = await api.delete(`/delete-user/${id}`);
+        const response = await api.delete(`/delete-user/${id}`,{
+            headers: {
+                Authorization : `Bearer ${adminToken}`,
+            }
+        });
         return response.data;
     },
 };

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {userService} from '../../services/userService'
-export default function UserTable({  users, loading, onRefresh, onUserUpdated }) {
+export default function UserTable({  users, loading, onRefresh, onUserUpdated ,onUserStatusToggle, onUserDeleted}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         id : '',
@@ -51,12 +51,26 @@ export default function UserTable({  users, loading, onRefresh, onUserUpdated })
             }
     };
 
-    const handleToggleStatus = (id) => {
+    const handleToggleStatus = async (id) => {
+        const userStr = localStorage.getItem('user');
+        const user = JSON.parse(userStr);
+        const token = localStorage.getItem('token');
 
+        if(user.role ==='Directeur'){
+            await userService.toggleStatus(id,token);
+            onUserStatusToggle();
+        }
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
+        const userStr = localStorage.getItem('user');
+        const user = JSON.parse(userStr);
+        const token = localStorage.getItem('token');
 
+        if(user.role ==='Directeur'){
+            await userService.userDelete(id,token);
+            onUserDeleted();
+        }
     };
 
     const handleAssignRights = (id) => {
