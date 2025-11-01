@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {userService} from '../../services/userService'
-export default function UserTable({  users, loading, onRefresh, onUserUpdated ,onUserStatusToggle, onUserDeleted}) {
+export default function UserTable({users, loading, onRefresh, onUserUpdated ,onUserStatusToggle, onUserDeleted}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         id : '',
@@ -73,9 +73,6 @@ export default function UserTable({  users, loading, onRefresh, onUserUpdated ,o
         }
     };
 
-    const handleAssignRights = (id) => {
-
-    };
 
     const handleSubmit = async(e) =>{
         e.preventDefault();
@@ -221,17 +218,6 @@ export default function UserTable({  users, loading, onRefresh, onUserUpdated ,o
                                             </svg>
                                         </button>
 
-                                        {/* Attribuer des droits */}
-                                        <button
-                                            onClick={() => handleAssignRights(user.id)}
-                                            className="text-purple-600 hover:text-purple-900"
-                                            title="Attribuer des droits"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                            </svg>
-                                        </button>
-
                                         {/* Supprimer */}
                                         <button
                                             onClick={() => handleDelete(user.id)}
@@ -301,24 +287,6 @@ export default function UserTable({  users, loading, onRefresh, onUserUpdated ,o
                                                 ) : (
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                                 )}
-                                            </svg>
-                                        </button>
-                                        <button
-                                            onClick={() => handleAssignRights(user.id)}
-                                            className="text-purple-600 hover:text-purple-800 p-1"
-                                            title="Attribuer des droits"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(user.id)}
-                                            className="text-red-600 hover:text-red-800 p-1"
-                                            title="Supprimer"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
                                     </div>
