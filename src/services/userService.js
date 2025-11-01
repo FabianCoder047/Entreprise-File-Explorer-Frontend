@@ -11,6 +11,22 @@ export const userService = {
         return response.data;
     },
 
+    async getUser(id,adminToken) {
+        try{
+            const api = client();
+            const response = await api.get(`/get-user/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                }
+
+            });
+            return response.data;
+        }catch(err){
+            console.log(err);
+            throw err;
+        }
+    },
+
     async create(data,adminToken) {
 
             try{
@@ -26,9 +42,13 @@ export const userService = {
             }
     },
 
-    async update(id, data) {
+    async update(id, data,adminToken) {
         const api = client();
-        const response = await api.put(`/update-user/${id}`, data);
+        const response = await api.put(`/update-user/${id}`, data,{
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+            }
+        });
         return response.data;
     },
 

@@ -1,21 +1,80 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {userService} from '../../services/userService'
+export default function UserTable({  users, loading, onRefresh, onUserUpdated }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        id : '',
+        nom: '',
+        prenom: '',
+        email: '',
+        role: ''
+    });
+    const clearFormData = () => {
+        setFormData({
+            id : '',
+            nom: '',
+            prenom: '',
+            email: '',
+            role: ''
+        });
+    }
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        clearFormData()
+    };
 
-export default function UserTable({  users, loading, onRefresh }) {
-    const handleEdit = (user) => {
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+    const handleEdit = async (id) => {
+            const userStr = localStorage.getItem('user');
+            const user = JSON.parse(userStr);
+            const token = localStorage.getItem('token');
+
+            if(user.role ==='Directeur'){
+                const response = await userService.getUser(id,token);
+                setFormData(
+                    {
+                        id : response.id,
+                        nom: response.nom,
+                        prenom: response.prenom,
+                        email: response.email,
+                        role: response.role,
+
+                    }
+                );
+                setIsModalOpen(true);
+            }
+    };
+
+    const handleToggleStatus = (id) => {
 
     };
 
-    const handleToggleStatus = (user) => {
+    const handleDelete = (id) => {
 
     };
 
-    const handleDelete = (user) => {
+    const handleAssignRights = (id) => {
 
     };
 
-    const handleAssignRights = (user) => {
-
-    };
+    const handleSubmit = async(e) =>{
+        e.preventDefault();
+        const userStr =localStorage.getItem('user');
+        const user = JSON.parse(userStr);
+        const token = localStorage.getItem('token');
+        const { id, ...updateData } = formData;
+        if(user.role ==="Directeur"){
+            await userService.update(id,updateData,token);
+            setIsModalOpen(false);
+            onUserUpdated();
+        }
+    }
     if (loading) {
         return (
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -121,7 +180,7 @@ export default function UserTable({  users, loading, onRefresh }) {
                                     <div className="flex space-x-2">
                                         {/* Modifier */}
                                         <button
-                                            onClick={() => handleEdit(user)}
+                                            onClick={() => handleEdit(user.id)}
                                             className="text-blue-600 hover:text-blue-900"
                                             title="Modifier"
                                         >
@@ -132,7 +191,7 @@ export default function UserTable({  users, loading, onRefresh }) {
 
                                         {/* Activer/Désactiver */}
                                         <button
-                                            onClick={() => handleToggleStatus(user)}
+                                            onClick={() => handleToggleStatus(user.id)}
                                             className={user.is_active
                                                 ? "text-orange-600 hover:text-orange-900"
                                                 : "text-green-600 hover:text-green-900"
@@ -150,7 +209,7 @@ export default function UserTable({  users, loading, onRefresh }) {
 
                                         {/* Attribuer des droits */}
                                         <button
-                                            onClick={() => handleAssignRights(user)}
+                                            onClick={() => handleAssignRights(user.id)}
                                             className="text-purple-600 hover:text-purple-900"
                                             title="Attribuer des droits"
                                         >
@@ -161,7 +220,7 @@ export default function UserTable({  users, loading, onRefresh }) {
 
                                         {/* Supprimer */}
                                         <button
-                                            onClick={() => handleDelete(user)}
+                                            onClick={() => handleDelete(user.id)}
                                             className="text-red-600 hover:text-red-900"
                                             title="Supprimer"
                                         >
@@ -206,7 +265,7 @@ export default function UserTable({  users, loading, onRefresh }) {
                                     <div className="flex space-x-1">
                                         {/* Boutons d'actions version mobile */}
                                         <button
-                                            onClick={() => handleEdit(user)}
+                                            onClick={() => handleEdit(user.id)}
                                             className="text-blue-600 hover:text-blue-800 p-1"
                                             title="Modifier"
                                         >
@@ -215,7 +274,7 @@ export default function UserTable({  users, loading, onRefresh }) {
                                             </svg>
                                         </button>
                                         <button
-                                            onClick={() => handleToggleStatus(user)}
+                                            onClick={() => handleToggleStatus(user.id)}
                                             className={user.is_active
                                                 ? "text-orange-600 hover:text-orange-800 p-1"
                                                 : "text-green-600 hover:text-green-800 p-1"
@@ -231,7 +290,7 @@ export default function UserTable({  users, loading, onRefresh }) {
                                             </svg>
                                         </button>
                                         <button
-                                            onClick={() => handleAssignRights(user)}
+                                            onClick={() => handleAssignRights(user.id)}
                                             className="text-purple-600 hover:text-purple-800 p-1"
                                             title="Attribuer des droits"
                                         >
@@ -240,7 +299,7 @@ export default function UserTable({  users, loading, onRefresh }) {
                                             </svg>
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(user)}
+                                            onClick={() => handleDelete(user.id)}
                                             className="text-red-600 hover:text-red-800 p-1"
                                             title="Supprimer"
                                         >
@@ -270,6 +329,106 @@ export default function UserTable({  users, loading, onRefresh }) {
                     </div>
                 )}
             </div>
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg w-full max-w-md">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h2 className="text-xl font-semibold">Modifier un utilisateur</h2>
+                            <button
+                                onClick={handleCloseModal}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="p-6">
+                            {/* Grille à 2 colonnes pour Nom et Prénom */}
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Nom
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="nom"
+                                        value={formData.nom}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Prénom
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="prenom"
+                                        value={formData.prenom}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Email et Rôle en pleine largeur */}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Rôle
+                                    </label>
+                                    <select
+                                        name="role"
+                                        value={formData.role}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Sélectionner un rôle</option>
+                                        <option value="Directeur">Directeur</option>
+                                        <option value="Responsable">Responsable</option>
+                                        <option value="Employe">Employé</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 pt-6">
+                                <button
+                                    type="button"
+                                    onClick={handleCloseModal}
+                                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                >
+                                    Modifier
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
